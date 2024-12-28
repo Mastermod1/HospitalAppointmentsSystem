@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  django:
+    build:
+      context: ./django_app
+    container_name: django_app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./django_app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=secure_password
+      - DB_HOST=postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=secure_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: swagger_ui
+    ports:
+      - "8080:8080"
+    environment:
+      - API_URL=http://django:8000/swagger.json
+volumes:
+  pgdata:
