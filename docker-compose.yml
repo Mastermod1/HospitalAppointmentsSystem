@@ -17,6 +17,7 @@ services:
       - POSTGRES_USER=django_user
       - POSTGRES_PASSWORD=secure_password
       - DB_HOST=postgres
+      - DB_PORT=5432
 
   postgres:
     image: postgres:latest
@@ -24,9 +25,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=django_db
       - POSTGRES_USER=django_user
       - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_DB=django_db
     volumes:
       - pgdata:/var/lib/postgresql/data
 

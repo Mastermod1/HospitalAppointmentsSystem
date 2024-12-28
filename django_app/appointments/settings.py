@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'visit_registration.apps.VisitRegistrationConfig',
 ]
 
 MIDDLEWARE = [
@@ -78,10 +79,10 @@ WSGI_APPLICATION = 'appointments.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'django_db'),         # Database name
-        'USER': os.getenv('POSTGRES_USER', 'django_user'),     # Database user
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'secure_password'),  # Password
-        'HOST': os.getenv('DB_HOST', 'localhost'),             # Host (e.g., service name in Docker Compose)
+        'NAME': os.getenv('POSTGRES_DB', 'django_db'),
+        'USER': os.getenv('POSTGRES_USER', 'django_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'secure_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
