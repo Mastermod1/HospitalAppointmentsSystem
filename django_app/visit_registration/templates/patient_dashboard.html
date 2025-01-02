@@ -1,2 +1,17 @@
-<h1>Welcome Patient</h1>
-<p>Admin-specific content</p>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Base panel</title>
+        {% load static %}
+        <!-- <link href="css/style.css" rel="stylesheet"> -->
+    </head>
+    <body>
+        <h1>Welcome Patient</h1>
+        <div id="to_fill"></div>
+        <button id="Login_button">Login</button>
+        <button id="Fetch_button">Fetch</button>
+        <script src="{% static 'js/app.js' %}"></script>
+    </body>
+</html>
