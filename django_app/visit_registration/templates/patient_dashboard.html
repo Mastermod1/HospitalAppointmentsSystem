@@ -12,6 +12,24 @@
         <div id="to_fill"></div>
         <button id="Login_button">Login</button>
         <button id="Fetch_button">Fetch</button>
+        <div>
+            <label for="specialization_dropdown">Specjalizacja</label>
+            <select id="specialization_dropdown">
+                <option value="" disabled selected>...</option>
+            </select>
+        </div>
+        <div>
+            <label for="doctors_dropdown">Lekarz</label>
+            <select id="doctors_dropdown">
+                <option value="" disabled selected>...</option>
+            </select>
+        </div>
+        <div>
+            <label for="place_dropdown">Placówka</label>
+            <select id="place_dropdown" disabled>
+                <option value="" disabled selected>...</option>
+            </select>
+        </div>
         <script src="{% static 'js/app.js' %}"></script>
     </body>
 </html>
