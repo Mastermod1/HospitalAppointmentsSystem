@@ -1,17 +1,7 @@
-from django.shortcuts import render, redirect, resolve_url
-from django.urls import reverse_lazy, reverse
-from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, resolve_url
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
-from .forms import AppointmentForm
-from django.contrib.auth.models import Group, Permission
-
-
-if not Group.objects.get(name='patient'):
-    Group.objects.create(name='patient')
-if not Group.objects.get(name='doctor'):
-    Group.objects.create(name='doctor')
+from rest_framework.authtoken.models import Token
 
 
 def is_doctor(user):
@@ -34,31 +24,24 @@ def patient_view(request):
     return render(request, 'patient_dashboard.html')
 
 
-def register_appointment(request):
-    if request.method == 'POST':
-        form = AppointmentForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('success')
-    else:
-        form = AppointmentForm()
-    return render(request, 'register.html', {'form': form})
-
-
-def success(request):
-    return render(request, 'success.html')
-
-
 @login_required
 @user_passes_test(is_patient)
 def patient_dashboard(request):
-    return render(request, 'patient_dashboard.html')
+    response = render(request, 'patient_dashboard.html')
+    user = request.user
+    token, created = Token.objects.get_or_create(user=user)
+    response.set_cookie('auth_token', token, max_age=3600)
+    return response
 
 
 @login_required
 @user_passes_test(is_doctor)
 def doctor_dashboard(request):
-    return render(request, 'doctor_dashboard.html')
+    response = render(request, 'doctor_dashboard.html')
+    user = request.user
+    token, created = Token.objects.get_or_create(user=user)
+    response.set_cookie('auth_token', token, max_age=3600)
+    return response
 
 
 class CustomLoginView(LoginView):

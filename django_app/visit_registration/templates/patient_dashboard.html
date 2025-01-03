@@ -1,17 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Base panel</title>
-        {% load static %}
-        <!-- <link href="css/style.css" rel="stylesheet"> -->
-    </head>
-    <body>
-        <h1>Welcome Patient</h1>
-        <div id="to_fill"></div>
-        <button id="Login_button">Login</button>
-        <button id="Fetch_button">Fetch</button>
-        <script src="{% static 'js/app.js' %}"></script>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Base Panel</title>
+    {% load static %}
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            margin-top: 40px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Section */
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        select, input[type="date"], button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        select:focus, input[type="date"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+
+        /* Buttons */
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #357ab7;
+        }
+
+        /* Layout for Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .button-container button {
+            flex: 1;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Witaj Pacjencie!</h1>
+    <div class="container">
+        <div class="form-section">
+            <label for="specialization_dropdown">Specjalizacja</label>
+            <select id="specialization_dropdown">
+                <option value="" disabled selected>...</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label for="doctors_dropdown">Lekarz</label>
+            <select id="doctors_dropdown">
+                <option value="any" selected>Dowolny</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label for="visit_date_dropdown">Data</label>
+            <input id="visit_date_dropdown" type="date">
+        </div>
+
+        <div class="form-section">
+            <label for="visit_hour_dropdown">Dostępne godziny</label>
+            <select id="visit_hour_dropdown">
+                <option value="any" selected>Dowolny</option>
+            </select>
+        </div>
+
+        <div class="button-container">
+            <button id="reserve_button" type="submit">Zarezerwuj</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Your Company. All Rights Reserved.
+    </footer>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
 </html>
