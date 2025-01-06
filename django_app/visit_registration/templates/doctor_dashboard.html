@@ -1,2 +1,165 @@
-<h1>Welcome Doctor</h1>
-<p>Admin-specific content</p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panel Lekarza</title>
+    {% load static %}
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            padding-left: 20px;
+            text-align: center;
+        }
+
+        /* Date navigation bar styles */
+        .date-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .date-box {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .date-box:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .date-box.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .date-day {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .date-month {
+            font-size: 12px;
+        }
+
+        #visits {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .visit {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .visit:hover {
+            transform: scale(1.02);
+        }
+
+        .visit-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .visit-date,
+        .visit-name {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .visit-details-btn {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .visit-details-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .visit-details-btn:focus {
+            outline: none;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            #visits {
+                padding: 15px;
+            }
+
+            .visit {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .visit-details-btn {
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .date-box {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Witaj Lekarzu!</h1>
+    <div>
+        <div class="section-title">Wybierz Dzień</div>
+        <div class="date-nav" id="date-nav"></div> <!-- Date navigation bar -->
+        <div class="section-title">Dzisiejsze Wizyty</div>
+        <div id="visits"></div> <!-- Visits will be displayed here -->
+    </div>
+    <script src="{% static 'js/doctor_dashboard.js' %}"></script>
+</body>
+
+</html>

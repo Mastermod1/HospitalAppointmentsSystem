@@ -37,6 +37,9 @@ class VisitStatus(models.Model):
 
     status = models.CharField(max_length=20, choices=STATUS)
 
+    def __str__(self):
+        return self.status
+
 
 class Appointment(models.Model):
     date = models.DateTimeField()

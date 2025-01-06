@@ -106,12 +106,25 @@ class AppointmentEndpoint(APIView):
 
 
 class ObtainAuthToken(APIView):
-    permission_classes = [AllowAny]  # No authentication or authorization required
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
-        print("halo", flush=True)
         user = request.user
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key
         })
+
+
+class DoctorVisitsEndpoint(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, date):
+        try:
+            datetime_date = datetime.strptime(date, "%d.%m.%Y").date()
+            doctorProfile = DoctorProfile.objects.get(user=request.user)
+            appointments = Appointment.objects.filter(doctor=doctorProfile, date__date=datetime_date)
+            res = {"appointments": [{"date": x.date.strftime('%d.%m.%Y'), "time": x.date.strftime('%H:%M'), "patient_name": x.patient.user.get_full_name()} for x in appointments]}
+            return Response(json.dumps(res, indent=4), status=status.HTTP_200_OK)
+        except Specialization.DoesNotExist:
+            return Response({"error": "error"}, status=status.HTTP_404_NOT_FOUND)

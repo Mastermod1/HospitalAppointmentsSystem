@@ -12,4 +12,5 @@ urlpatterns = [
     path('api/doctors/<int:specialization_id>/', rest_interface_views.DoctorEndpoint.as_view(), name='doctors'),
     path('api/doctor_availability/<int:doctor_id>/<str:date>/', rest_interface_views.DoctorAvailabilityEndpoint.as_view(), name='doctor-availability'),
     path('api/make_appointment/', rest_interface_views.AppointmentEndpoint.as_view(), name='doctor-availability'),
+    path('api/doctor_visits/<str:date>/', rest_interface_views.DoctorVisitsEndpoint.as_view(), name='doctor-visits'),
 ]
