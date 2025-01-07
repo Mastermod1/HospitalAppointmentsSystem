@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
-from .models import Specialization, DoctorProfile, Appointment, PatientProfile, VisitStatus
-from .serializers import SpecializationSerializer, DoctorProfileSerializer, AppointmentSerializer
+from .models import Specialization, DoctorProfile, Appointment, PatientProfile, Visit
+from .serializers import SpecializationSerializer, DoctorProfileSerializer, AppointmentSerializer, VisitSerializer
 from rest_framework.authtoken.models import Token
 
 
@@ -69,7 +69,6 @@ class AppointmentEndpoint(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
 
-        print(request.data, flush=True)
         doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('time')
 
@@ -98,8 +97,7 @@ class AppointmentEndpoint(APIView):
             print('Bad date', flush=True)
             return Response({"error": "Appointment date must be in the future."}, status=status.HTTP_400_BAD_REQUEST)
 
-        status_object = VisitStatus.objects.get(status='reserved')
-        appointment = Appointment.objects.create(patient=patient, doctor=doctor, date=appointment_date, place="Poland", status=status_object)
+        appointment = Appointment.objects.create(patient=patient, doctor=doctor, date=appointment_date, place="Poland", status='scheduled')
 
         serializer = AppointmentSerializer(appointment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -123,8 +121,45 @@ class DoctorVisitsEndpoint(APIView):
         try:
             datetime_date = datetime.strptime(date, "%d.%m.%Y").date()
             doctorProfile = DoctorProfile.objects.get(user=request.user)
-            appointments = Appointment.objects.filter(doctor=doctorProfile, date__date=datetime_date)
-            res = {"appointments": [{"date": x.date.strftime('%d.%m.%Y'), "time": x.date.strftime('%H:%M'), "patient_name": x.patient.user.get_full_name()} for x in appointments]}
+            appointments = Appointment.objects.filter(doctor=doctorProfile, date__date=datetime_date, status="scheduled")
+            res = {"appointments": [{"date": x.date.strftime('%d.%m.%Y'), "time": x.date.strftime('%H:%M'), "patient_name": x.patient.user.get_full_name(), "patient_id": x.patient.id, "appointment_id": x.id} for x in appointments]}
             return Response(json.dumps(res, indent=4), status=status.HTTP_200_OK)
         except Specialization.DoesNotExist:
             return Response({"error": "error"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class CreateVisit(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        patient_id = request.data.get('patient_id', None)
+        appointment_id = request.data.get('appointment_id', None)
+        interview = request.data.get('interview', None)
+        recommendations = request.data.get('recommendations', None)
+
+        if patient_id is None or appointment_id is None or interview is None or recommendations is None:
+            return Response({"error": "Missing one field."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            doctor = DoctorProfile.objects.get(user=user)
+        except DoctorProfile.DoesNotExist:
+            return Response({"error": "Doctor not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            patient = PatientProfile.objects.get(id=patient_id)
+        except PatientProfile.DoesNotExist:
+            return Response({"error": "Patient not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            appointment = Appointment.objects.get(id=appointment_id)
+        except PatientProfile.DoesNotExist:
+            return Response({"error": "Appointment not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        visit = Visit.objects.create(patient=patient, doctor=doctor, appointment=appointment, interview=interview, recommendations=recommendations)
+        appointment.status = "completed"
+        appointment.save()
+
+        serializer = VisitSerializer(visit)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -5,10 +5,42 @@ function formatDate(date) {
     return `${day}.${month}.${year}`;
 }
 
-function viewDetails(item) {
+const save_visit = (patient_id, appointmnet_id) => {
+    const token = localStorage.getItem('accessToken');
+    const apiUrl = `http://localhost:8000/registration/api/create_visit/`;
+    bodyObject = {
+        patient_id: patient_id,
+        appointment_id: appointmnet_id,
+        interview: document.getElementById("interview").value,
+        recommendations: document.getElementById("recommendations").value
+    };
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body:  JSON.stringify(bodyObject),
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error("Error", response);
+        }
+    })
+    .then(data => {
+        console.log(data);
+        goBack();
+    })
+    .catch( error => console.error(error));
+};
+
+
+function viewDetails(patient_id, appointment_id) {
     document.getElementById('listPanel').classList.remove('active');
     document.getElementById('detailsPanel').classList.add('active');
-    document.getElementById('detailsContent').textContent = `You are viewing details for: ${item}`;
+    document.getElementById('save_btn').addEventListener('click', () => save_visit(patient_id, appointment_id))
 }
 
 function goBack() {
@@ -19,7 +51,7 @@ function goBack() {
 const load_visit_infos = (data) => {
     const visitsContainer = document.getElementById('visits');
     visitsContainer.innerHTML = '';
-    data.forEach(({ date, time, patient_name }) => {
+    data.forEach(({ date, time, patient_name, patient_id, appointment_id }) => {
         const visitElement = document.createElement('div');
         visitElement.classList.add('visit');
 
@@ -42,7 +74,7 @@ const load_visit_infos = (data) => {
         detailsButton.textContent = 'Details →';
 
         detailsButton.addEventListener('click', () => {
-            viewDetails(patient_name);
+            viewDetails(patient_id, appointment_id);
         });
 
         visitElement.appendChild(visitInfo);

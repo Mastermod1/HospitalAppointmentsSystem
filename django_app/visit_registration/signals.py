@@ -3,8 +3,11 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User, Group
 from .models import PatientProfile, DoctorProfile, Specialization
 
+
 Group.objects.get_or_create(name="patient")
 Group.objects.get_or_create(name='doctor')
+Specialization.objects.get_or_create(name="lekarz")
+
 
 @receiver(m2m_changed, sender=User.groups.through)
 def create_patient_profile_on_group_add(sender, instance, action, pk_set, **kwargs):
