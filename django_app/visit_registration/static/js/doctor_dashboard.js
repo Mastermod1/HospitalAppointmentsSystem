@@ -5,6 +5,17 @@ function formatDate(date) {
     return `${day}.${month}.${year}`;
 }
 
+function viewDetails(item) {
+    document.getElementById('listPanel').classList.remove('active');
+    document.getElementById('detailsPanel').classList.add('active');
+    document.getElementById('detailsContent').textContent = `You are viewing details for: ${item}`;
+}
+
+function goBack() {
+    document.getElementById('detailsPanel').classList.remove('active');
+    document.getElementById('listPanel').classList.add('active');
+}
+
 const load_visit_infos = (data) => {
     const visitsContainer = document.getElementById('visits');
     visitsContainer.innerHTML = '';
@@ -31,7 +42,7 @@ const load_visit_infos = (data) => {
         detailsButton.textContent = 'Details →';
 
         detailsButton.addEventListener('click', () => {
-            alert(`Displaying details for ${patient_name}`);
+            viewDetails(patient_name);
         });
 
         visitElement.appendChild(visitInfo);

@@ -127,6 +127,14 @@
             outline: none;
         }
 
+        .panel {
+          display: none;
+        }
+
+        .panel.active {
+          display: block;
+        }
+
         /* Responsive styles */
         @media (max-width: 768px) {
             #visits {
@@ -153,11 +161,16 @@
 
 <body>
     <h1>Witaj Lekarzu!</h1>
-    <div>
+    <div id="listPanel" class="panel active">
         <div class="section-title">Wybierz Dzień</div>
         <div class="date-nav" id="date-nav"></div> <!-- Date navigation bar -->
         <div class="section-title">Dzisiejsze Wizyty</div>
         <div id="visits"></div> <!-- Visits will be displayed here -->
+    </div>
+    <div id="detailsPanel" class="panel">
+        <h1>Item Details</h1>
+        <p id="detailsContent"></p>
+        <button onclick="goBack()">Back to List</button>
     </div>
     <script src="{% static 'js/doctor_dashboard.js' %}"></script>
 </body>
