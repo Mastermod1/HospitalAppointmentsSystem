@@ -30,8 +30,6 @@ class Appointment(models.Model):
     doctor = models.ForeignKey(DoctorProfile, on_delete=models.CASCADE, related_name='appointments')
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='appointments')
     status = models.CharField(max_length=20, choices=[('scheduled', 'Scheduled'), ('completed', 'Completed')])
-    place = models.CharField(max_length=100, null=True)
-    description = models.TextField(null=True)
 
     def __str__(self):
         return f"{self.doctor.user.first_name} {self.doctor.user.last_name} with {self.patient.user.first_name} on {self.date}"

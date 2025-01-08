@@ -6,7 +6,6 @@
     <title>Base Panel</title>
     {% load static %}
     <style>
-        /* Global Styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f7fc;
@@ -14,13 +13,13 @@
             margin: 0;
             padding: 0;
         }
+
         h1 {
             text-align: center;
             color: #4a90e2;
             margin-top: 40px;
         }
 
-        /* Container */
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -30,7 +29,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Form Section */
         .form-section {
             margin-bottom: 20px;
         }
@@ -51,12 +49,15 @@
             font-size: 16px;
         }
 
+        input[type="date"] {
+            width: calc(100% - 22px);
+        }
+
         select:focus, input[type="date"]:focus {
             border-color: #4a90e2;
             outline: none;
         }
 
-        /* Buttons */
         button {
             background-color: #4a90e2;
             color: white;
@@ -70,7 +71,6 @@
             background-color: #357ab7;
         }
 
-        /* Layout for Buttons */
         .button-container {
             display: flex;
             justify-content: space-between;
@@ -81,7 +81,6 @@
             flex: 1;
         }
 
-        /* Footer */
         footer {
             text-align: center;
             margin-top: 40px;
@@ -114,8 +113,8 @@
 
         <div class="form-section">
             <label for="visit_hour_dropdown">Dostępne godziny</label>
-            <select id="visit_hour_dropdown">
-                <option value="any" selected>Dowolny</option>
+            <select id="visit_hour_dropdown" disabled>
+                <option value="any" selected>-</option>
             </select>
         </div>
 

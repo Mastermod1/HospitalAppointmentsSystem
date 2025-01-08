@@ -4,8 +4,7 @@ const calendar = document.getElementById('visit_date_dropdown');
 const hours = document.getElementById('visit_hour_dropdown');
 const reserve = document.getElementById('reserve_button');
 
-cache = {};
-
+let cache = {};
 const load_specializations = () => {
     if (cache['specializations'])
     {
@@ -22,30 +21,23 @@ const load_specializations = () => {
         if (response.ok) {
             return response.json();
         } else {
-            throw new Error("Unaurhorized");
+            throw new Error("Error");
         }
     })
     .then(data => {
-        console.log("Got response with data: ", data);
         specializations_dropdown.innerHTML = "";
         data.forEach(el => {
             option = document.createElement('option');
             option.innerText = el.name;
             option.setAttribute('value', el.id);
             specializations_dropdown.appendChild(option);
-            
         });
-        cache['specializations'] = data;
+        cache['specializations'] = true;
     })
     .catch( error => console.error(error));
 };
 
-const load_doctors = (is_new_doctor) => {
-    if (!is_new_doctor && cache['doctors'])
-    {
-        return;
-    }
-
+const load_doctors = () => {
     const token = localStorage.getItem('accessToken');
     const specializationId = specializations_dropdown.value;
     const apiUrl = `http://localhost:8000/registration/api/doctors/${specializationId}/`;
@@ -59,14 +51,14 @@ const load_doctors = (is_new_doctor) => {
         if (response.ok) {
             return response.json();
         } else {
-            throw new Error("Unaurhorized");
+            throw new Error("Error");
         }
     })
     .then(data => {
-        console.log("Got response with data: ", data);
         doctors_dropdown.innerHTML = "";
         option = document.createElement('option');
         option.innerText = `Dowolny`;
+        option.setAttribute('value', '-1');
         doctors_dropdown.appendChild(option);
         data.forEach(el => {
             option = document.createElement('option');
@@ -74,7 +66,6 @@ const load_doctors = (is_new_doctor) => {
             option.setAttribute('value', el.id);
             doctors_dropdown.appendChild(option);
         });
-        cache['doctors'] = data;
     })
     .catch( error => console.error(error));
 };
@@ -93,6 +84,7 @@ const load_available_dates = () => {
     const token = localStorage.getItem('accessToken');
     const doctorId = doctors_dropdown.value;
     const date = calendar.value;
+    hours.disabled = false;
     const apiUrl = `http://localhost:8000/registration/api/doctor_availability/${doctorId}/${date}/`;
     fetch(apiUrl, {
         method: 'GET',
@@ -104,17 +96,22 @@ const load_available_dates = () => {
         if (response.ok) {
             return response.json();
         } else {
-            throw new Error("Unaurhorized");
+            throw new Error("Error");
         }
     })
     .then(data => {
         data = JSON.parse(data)
         hours.innerHTML = "";
-        data.times.forEach(el => {
+        if (data.times.length > 0) {
+            data.times.forEach(el => {
+                option = document.createElement('option');
+                option.innerText = el;
+                hours.appendChild(option);
+            });
+        } else {
             option = document.createElement('option');
-            option.innerText = el;
-            hours.appendChild(option);
-        });
+            option.innerText = "Brak wolnych terminów";
+        }
     })
     .catch( error => console.error(error));
 };
@@ -127,7 +124,6 @@ const reserve_call = () => {
         date: calendar.value,
         time: hours.value,
     };
-    console.log(bodyObject);
     fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -140,14 +136,15 @@ const reserve_call = () => {
         if (response.ok) {
             return response.json();
         } else {
-            throw new Error("Error", response);
+            throw new Error("Error");
         }
     })
-    .then(data => {
-        console.log(data);
+    .then(() => {
         location.reload();
+        hours.disabled = true;
+        calendar.value = "";
     })
-    .catch( error => console.error(error));
+    .catch( error => console.log(error));
 };
 
 const getCookie = name => {
@@ -168,6 +165,6 @@ const get_token = () => {
 window.onload = get_token;
 calendar.setAttribute('min', today_date());
 specializations_dropdown.addEventListener('click', load_specializations);
-specializations_dropdown.addEventListener('change', () => load_doctors(true));
+specializations_dropdown.addEventListener('change', load_doctors);
 calendar.addEventListener('change', load_available_dates);
 reserve.addEventListener('click', reserve_call);

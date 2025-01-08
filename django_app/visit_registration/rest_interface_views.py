@@ -2,29 +2,26 @@ import json
 from datetime import datetime, time, timedelta, timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Specialization, DoctorProfile, Appointment, PatientProfile, Visit
 from .serializers import SpecializationSerializer, DoctorProfileSerializer, AppointmentSerializer, VisitSerializer
-from rest_framework.authtoken.models import Token
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.utils import swagger_auto_schema, swagger_serializer_method
 
 DATE_FORMAT_STRING = "%d.%m.%Y"
 TIME_FORMAT_STRING = "%H:%M"
 DATETIME_FORMAT_STRING = f"{DATE_FORMAT_STRING} {TIME_FORMAT_STRING}"
 
 
-class VisitsEndpoint(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({"visits": ["none", "none"]})
-
-
 class SpecializationsEndpoint(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Get specializations.",
+        responses={
+            200: VisitSerializer(many=True, help_text="Get specializations."),
+        }
+    )
     def get(self, request):
         specializations = Specialization.objects.all()
         serializer = SpecializationSerializer(specializations, many=True)
@@ -34,6 +31,13 @@ class SpecializationsEndpoint(APIView):
 class DoctorEndpoint(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Get doctors.",
+        responses={
+            200: VisitSerializer(many=True, help_text="Get doctors."),
+            404: VisitSerializer(many=True, help_text="Not found doctors."),
+        }
+    )
     def get(self, request, specialization_id):
         try:
             doctors = DoctorProfile.objects.filter(specialization__id=specialization_id)
@@ -43,13 +47,20 @@ class DoctorEndpoint(APIView):
 
             serializer = DoctorProfileSerializer(doctors, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Specialization.DoesNotExist:
+        except DoctorProfile.DoesNotExist:
             return Response({"error": "error"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class DoctorAvailabilityEndpoint(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Get doctor availability.",
+        responses={
+            200: VisitSerializer(many=True, help_text="Get doctor availability."),
+            404: VisitSerializer(many=True, help_text="Not found appointments."),
+        }
+    )
     def get(self, request, doctor_id, date):
         try:
             datetime_date = datetime.strptime(date, "%Y-%m-%d").date()
@@ -65,13 +76,21 @@ class DoctorAvailabilityEndpoint(APIView):
             res = {"times": free_times}
 
             return Response(json.dumps(res, indent=4), status=status.HTTP_200_OK)
-        except Specialization.DoesNotExist:
+        except Appointment.DoesNotExist:
             return Response({"error": "error"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AppointmentEndpoint(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Create an appointment.",
+        responses={
+            201: VisitSerializer(many=True, help_text="Create an appointment."),
+            400: VisitSerializer(many=True, help_text="Missing argument or incorrect appointment date."),
+            404: VisitSerializer(many=True, help_text="Something not available in database."),
+        }
+    )
     def post(self, request, *args, **kwargs):
         user = request.user
 
@@ -103,26 +122,22 @@ class AppointmentEndpoint(APIView):
             print('Bad date', flush=True)
             return Response({"error": "Appointment date must be in the future."}, status=status.HTTP_400_BAD_REQUEST)
 
-        appointment = Appointment.objects.create(patient=patient, doctor=doctor, date=appointment_date, place="Poland", status='scheduled')
+        appointment = Appointment.objects.create(patient=patient, doctor=doctor, date=appointment_date, status='scheduled')
 
         serializer = AppointmentSerializer(appointment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class ObtainAuthToken(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key
-        })
-
-
 class DoctorVisitsEndpoint(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Retrieve ordered appointments ordered by time for doctor.",
+        responses={
+            200: VisitSerializer(many=True, help_text="Retrieve ordered appointments ordered by time for doctor."),
+            404: VisitSerializer(many=True, help_text="Doctor does not exist."),
+        }
+    )
     def get(self, request, date):
         try:
             datetime_date = datetime.strptime(date, DATE_FORMAT_STRING).date()
@@ -131,7 +146,7 @@ class DoctorVisitsEndpoint(APIView):
             res = {"appointments": [{"date": x.date.strftime(DATE_FORMAT_STRING), "time": x.date.strftime(TIME_FORMAT_STRING), "patient_name": x.patient.user.get_full_name(), "patient_id": x.patient.id, "appointment_id": x.id} for x in appointments]}
             res["appointments"] = sorted(res["appointments"], key=lambda x: x["time"])
             return Response(json.dumps(res, indent=4), status=status.HTTP_200_OK)
-        except Specialization.DoesNotExist:
+        except DoctorProfile.DoesNotExist:
             return Response({"error": "error"}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -139,8 +154,12 @@ class CreateVisit(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Retrieve the list of products",
-        responses={200: VisitSerializer(many=True, help_text="List of products")}
+        operation_description="Create a visit from an appointment.",
+        responses={
+            201: VisitSerializer(many=True, help_text="Created visit."),
+            400: VisitSerializer(many=True, help_text="Missing field."),
+            404: VisitSerializer(many=True, help_text="Not present in database."),
+        }
     )
     def post(self, request, *args, **kwargs):
         user = request.user

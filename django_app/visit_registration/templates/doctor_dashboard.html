@@ -75,10 +75,13 @@
         #visits {
             display: flex;
             flex-direction: column;
+            justify-content: flex-start;
             gap: 20px;
             max-width: 700px;
+            width:  calc(100% - 40px);
             margin: auto;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .visit {
@@ -134,13 +137,13 @@
             position: absolute;
             top: 0;
             left: 50%;
+            flex-direction: column;
             transform: translateX(-50%);
             background-color: #ffffff;
             width: 100%;
             max-width: 700px;
             height: 100%;
             box-sizing: border-box;
-            overflow-y: auto; /* Enables scrolling if content overflows */
             padding: 20px;
             border-radius: 10px 10px 0 0; /* Optional for rounded corners */
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -159,7 +162,7 @@
         }
 
         .panel.active {
-            display: block;
+            display: flex;
         }
 
         .form-section {
@@ -269,7 +272,7 @@
             <textarea id="recommendations"></textarea>
         </div>
         <div id="btns">
-            <button id="cancel_btn">Anuluj wizytę</button>
+            <button id="cancel_btn" onclick="goBack()">Anuluj wizytę</button>
             <button class="back-btn" onclick="goBack()">Wróć do Listy</button>
             <button id="save_btn">Zakończ wizytę</button>
         </div>

@@ -37,7 +37,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Appointment
-        fields = ['id', 'date', 'doctor', 'patient', 'status', 'place']
+        fields = ['id', 'date', 'doctor', 'patient', 'status']
 
 
 class VisitSerializer(serializers.ModelSerializer):
@@ -48,7 +48,3 @@ class VisitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visit
         fields = ['id', 'doctor', 'patient', 'appointment', 'interview', 'recommendations']
-        extra_kwargs = {
-            'interview': {'help_text': 'Ww'},
-            'recommendations': {'help_text': 'Lol'},
-        }

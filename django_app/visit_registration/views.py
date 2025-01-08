@@ -13,18 +13,6 @@ def is_patient(user):
 
 
 @login_required
-@user_passes_test(is_doctor)
-def doctor_view(request):
-    return render(request, 'doctor_dashboard.html')
-
-
-@login_required
-@user_passes_test(is_doctor)
-def patient_view(request):
-    return render(request, 'patient_dashboard.html')
-
-
-@login_required
 @user_passes_test(is_patient)
 def patient_dashboard(request):
     response = render(request, 'patient_dashboard.html')
