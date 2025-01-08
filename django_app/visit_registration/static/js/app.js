@@ -4,27 +4,6 @@ const calendar = document.getElementById('visit_date_dropdown');
 const hours = document.getElementById('visit_hour_dropdown');
 const reserve = document.getElementById('reserve_button');
 
-// const login = (username, password) => {
-//     fetch("http://localhost:8000/registration/api/token/", {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//             'username': username, 
-//             'password': password}),
-//     })
-//     .then(response => response.json())
-//     .then( data => {
-//         if (data.token) {
-//             console.log("Authorized");
-//             localStorage.setItem('accessToken', data.token);
-//         } else {
-//             console.error("No token");
-//         }
-//     });
-// };
-
 cache = {};
 
 const load_specializations = () => {

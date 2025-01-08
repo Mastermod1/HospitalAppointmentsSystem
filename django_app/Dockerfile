@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install drf-yasg
 
 COPY . /app/
 RUN chmod +x /app/scripts/wait_for_it.sh

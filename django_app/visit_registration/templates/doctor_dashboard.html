@@ -148,7 +148,6 @@
 
         .form-section textarea {
             width: 100%;
-            max-width: 560px;
             margin: 0 auto;
             padding: 10px;
             border: 1px solid #ccc;
@@ -200,6 +199,18 @@
         #save_btn {
             background-color: #28a745;
             color: white;
+        }
+
+        #cancel_btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #btns {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
         }
 
         #save_btn:hover {
@@ -257,8 +268,11 @@
             <label for="recommendations">Rekomendacje</label>
             <textarea id="recommendations"></textarea>
         </div>
-        <button class="back-btn" onclick="goBack()">Wróć do Listy</button>
-        <button id="save_btn">Zapisz</button>
+        <div id="btns">
+            <button id="cancel_btn">Anuluj wizytę</button>
+            <button class="back-btn" onclick="goBack()">Wróć do Listy</button>
+            <button id="save_btn">Zakończ wizytę</button>
+        </div>
     </div>
     <script src="{% static 'js/doctor_dashboard.js' %}"></script>
 </body>

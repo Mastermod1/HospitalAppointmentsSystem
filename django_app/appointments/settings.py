@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'visit_registration.apps.VisitRegistrationConfig',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

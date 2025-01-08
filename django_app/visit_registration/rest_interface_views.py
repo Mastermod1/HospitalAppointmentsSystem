@@ -7,6 +7,12 @@ from rest_framework import status
 from .models import Specialization, DoctorProfile, Appointment, PatientProfile, Visit
 from .serializers import SpecializationSerializer, DoctorProfileSerializer, AppointmentSerializer, VisitSerializer
 from rest_framework.authtoken.models import Token
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+DATE_FORMAT_STRING = "%d.%m.%Y"
+TIME_FORMAT_STRING = "%H:%M"
+DATETIME_FORMAT_STRING = f"{DATE_FORMAT_STRING} {TIME_FORMAT_STRING}"
 
 
 class VisitsEndpoint(APIView):
@@ -54,7 +60,7 @@ class DoctorAvailabilityEndpoint(APIView):
             free_times = []
             while (start != datetime.combine(datetime_date, time(hour=16, minute=0).replace(tzinfo=timezone.utc))):
                 if start not in reserved_times:
-                    free_times.append(start.ctime())
+                    free_times.append(start.strftime(DATETIME_FORMAT_STRING))
                 start = start + timedelta(minutes=30)
             res = {"times": free_times}
 
@@ -88,7 +94,7 @@ class AppointmentEndpoint(APIView):
             return Response({"error": "Patient not found for this user."}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            appointment_date = datetime.strptime(appointment_date, "%a %b %d %H:%M:%S %Y")
+            appointment_date = datetime.strptime(appointment_date, DATETIME_FORMAT_STRING)
         except ValueError:
             print('No Date', flush=True)
             return Response({"error": "Invalid date format. Use ctime eg: Sun Jan  5 08:00:00 2025"}, status=status.HTTP_400_BAD_REQUEST)
@@ -119,10 +125,11 @@ class DoctorVisitsEndpoint(APIView):
 
     def get(self, request, date):
         try:
-            datetime_date = datetime.strptime(date, "%d.%m.%Y").date()
+            datetime_date = datetime.strptime(date, DATE_FORMAT_STRING).date()
             doctorProfile = DoctorProfile.objects.get(user=request.user)
             appointments = Appointment.objects.filter(doctor=doctorProfile, date__date=datetime_date, status="scheduled")
-            res = {"appointments": [{"date": x.date.strftime('%d.%m.%Y'), "time": x.date.strftime('%H:%M'), "patient_name": x.patient.user.get_full_name(), "patient_id": x.patient.id, "appointment_id": x.id} for x in appointments]}
+            res = {"appointments": [{"date": x.date.strftime(DATE_FORMAT_STRING), "time": x.date.strftime(TIME_FORMAT_STRING), "patient_name": x.patient.user.get_full_name(), "patient_id": x.patient.id, "appointment_id": x.id} for x in appointments]}
+            res["appointments"] = sorted(res["appointments"], key=lambda x: x["time"])
             return Response(json.dumps(res, indent=4), status=status.HTTP_200_OK)
         except Specialization.DoesNotExist:
             return Response({"error": "error"}, status=status.HTTP_404_NOT_FOUND)
@@ -131,6 +138,10 @@ class DoctorVisitsEndpoint(APIView):
 class CreateVisit(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Retrieve the list of products",
+        responses={200: VisitSerializer(many=True, help_text="List of products")}
+    )
     def post(self, request, *args, **kwargs):
         user = request.user
 

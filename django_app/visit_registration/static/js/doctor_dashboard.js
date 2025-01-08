@@ -29,8 +29,7 @@ const save_visit = (patient_id, appointmnet_id) => {
             throw new Error("Error", response);
         }
     })
-    .then(data => {
-        console.log(data);
+    .then(() => {
         goBack();
     })
     .catch( error => console.error(error));
@@ -46,6 +45,8 @@ function viewDetails(patient_id, appointment_id) {
 function goBack() {
     document.getElementById('detailsPanel').classList.remove('active');
     document.getElementById('listPanel').classList.add('active');
+    document.getElementById("interview").value = "";
+    document.getElementById("recommendations").value = "";
 }
 
 const load_visit_infos = (data) => {
@@ -71,7 +72,7 @@ const load_visit_infos = (data) => {
 
         const detailsButton = document.createElement('button');
         detailsButton.classList.add('visit-details-btn');
-        detailsButton.textContent = 'Details →';
+        detailsButton.textContent = 'Rozpocznij';
 
         detailsButton.addEventListener('click', () => {
             viewDetails(patient_id, appointment_id);

@@ -29,12 +29,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  swagger:
-    image: swaggerapi/swagger-ui
-    container_name: swagger_ui
-    ports:
-      - "8080:8080"
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
     environment:
-      - API_URL=http://django:8000/swagger.json
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
 volumes:
   pgdata:
